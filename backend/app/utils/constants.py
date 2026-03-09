@@ -1,0 +1,5 @@
+SENTIMENTS = [
+    "positive",
+    "neutral",
+    "negative"
+]
