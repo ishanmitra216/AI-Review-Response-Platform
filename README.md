@@ -239,9 +239,27 @@ cd ai-review-response-platform
 
 ```bash
 cd backend
-
 pip install -r requirements.txt
 ```
+
+1. **Environment variables** – copy the example file and fill in at least
+   `OPENAI_API_KEY` (and `DATABASE_URL` if you plan to use the database).  The
+   integration endpoints read ``GOOGLE_API_KEY``, ``YELP_API_KEY`` and
+   ``FACEBOOK_API_KEY`` when available.  A simple ``.env`` file looks like:
+
+   ```text
+   OPENAI_API_KEY=sk-...your key...
+   DATABASE_URL=postgresql://user:pass@localhost/dbname
+   GOOGLE_API_KEY=...
+   YELP_API_KEY=...
+   FACEBOOK_API_KEY=...
+   ```
+
+2. **Datasets** – two empty CSVs are included under
+   ``ai_models/datasets``.  You can populate them manually or use the
+   `/datasets/upload` API (see below) to push training data from the browser or
+   a script.  The sentiment trainer reads ``sentiment_dataset.csv`` and the
+   topic trainer reads ``review_dataset.csv``.
 
 Run the server:
 
@@ -301,6 +319,15 @@ Example response:
 
 ---
 
+### Upload Dataset (CSV)
+
+```http
+POST /datasets/upload
+Content-Type: multipart/form-data
+
+Form field: file – the CSV file to store in ``ai_models/datasets``
+```
+
 ### Get Reviews
 
 ```http
@@ -329,6 +356,19 @@ POST /reviews
 ```
 
 ---
+
+## 🛠 Training (optional)
+
+Once you have populated the CSV files you can run the simple training helpers
+which currently just verify the presence of data and print a row count.  They
+live under ``ai_models/training``:
+
+```bash
+python ai_models/training/train_sentiment_model.py
+python ai_models/training/train_topic_model.py
+```
+
+Future versions will replace these skeletons with real model training logic.
 
 ## 🧪 Testing
 

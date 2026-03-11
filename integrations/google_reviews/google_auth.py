@@ -1,3 +1,7 @@
-def authenticate_google():
+import os
 
-    return "token"
+
+def authenticate_google():
+    """Return Google API key from environment.
+    """
+    return os.getenv("GOOGLE_API_KEY", "")
