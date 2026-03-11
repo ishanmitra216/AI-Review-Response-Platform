@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import API from "../services/api";
 
 function GenerateResponse() {
 
@@ -7,13 +7,13 @@ function GenerateResponse() {
   const [response, setResponse] = useState("");
 
   const generate = async () => {
-
-    const res = await axios.post(
-      "http://localhost:8000/responses/generate",
-      { text: review }
-    );
-
-    setResponse(res.data.response);
+    try {
+      const res = await API.post("/responses/generate", { text: review });
+      setResponse(res.data.response);
+    } catch (err) {
+      console.error("generation error", err);
+      setResponse("Error generating response");
+    }
   };
 
   return (

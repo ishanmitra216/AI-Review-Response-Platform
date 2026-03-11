@@ -23,3 +23,23 @@ def test_generate_response(monkeypatch):
     assert resp.status_code == 200
     data = resp.json()
     assert data["response"] == "dummy reply"
+
+
+def test_generate_response_error_path(monkeypatch):
+    # simulate an exception inside the OpenAI call and ensure fallback text
+    import app.ai_engine.response_generator as rg
+
+    class DummyError(Exception):
+        pass
+
+    def broken(*args, **kwargs):
+        raise DummyError("fail")
+
+    # monkeypatch whichever client method exists
+    if hasattr(rg, "_client"):
+        if hasattr(rg._client, "chat"):
+            monkeypatch.setattr(rg._client.chat.completions, "create", broken)
+        else:
+            monkeypatch.setattr(rg._client.ChatCompletion, "create", broken)
+
+    assert rg.generate_response("test") == "<error-generating-response>"
