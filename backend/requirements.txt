@@ -5,4 +5,5 @@ pydantic
 python-dotenv
 openai
 textblob
+python-multipart  # required for file upload endpoints
 pytest

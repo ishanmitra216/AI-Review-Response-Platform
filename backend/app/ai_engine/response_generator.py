@@ -6,6 +6,16 @@ openai.api_key = settings.OPENAI_API_KEY
 
 
 def generate_response(review):
+    """Build a response using OpenAI.
+
+    If the ``OPENAI_API_KEY`` is not set the function returns a placeholder
+    string rather than raising an error; this makes development and testing
+    easier.
+    """
+
+    if not settings.OPENAI_API_KEY:
+        # demonstrative stub (see tests which monkeypatch the OpenAI call)
+        return "<api-key-not-configured>"
 
     sentiment = analyze_sentiment(review)
 
