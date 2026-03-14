@@ -22,6 +22,14 @@ app.include_router(response_routes.router, prefix="/responses", tags=["Responses
 app.include_router(dataset_routes.router, prefix="/datasets", tags=["Datasets"])
 
 
+# ensure every path responds to OPTIONS so CORS preflight checks don't return 405
+from fastapi import Response
+
+@app.options("/{path_name:path}")
+def preflight(path_name: str):
+    return Response(status_code=200)
+
+
 @app.get("/")
 def root():
     return {"message": "AI Review Response Automation API Running"}
