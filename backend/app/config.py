@@ -21,6 +21,8 @@ class Settings:
     # AI / LLM provider.  you must set this to a valid OpenAI API key for the
     # response generator to work.
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    # default to a widely available model so student/free tiers work out of box.
+    OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
     # optional third‑party platform tokens – the integration modules will fall
     # back to a no‑op implementation if these are not provided.

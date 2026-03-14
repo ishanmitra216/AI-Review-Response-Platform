@@ -26,7 +26,7 @@ def test_generate_response(monkeypatch):
 
 
 def test_generate_response_error_path(monkeypatch):
-    # simulate an exception inside the OpenAI call and ensure fallback text
+    # simulate an exception inside the OpenAI call and ensure local fallback
     import app.ai_engine.response_generator as rg
 
     class DummyError(Exception):
@@ -42,4 +42,6 @@ def test_generate_response_error_path(monkeypatch):
         else:
             monkeypatch.setattr(rg._client.ChatCompletion, "create", broken)
 
-    assert rg.generate_response("test") == "<error-generating-response>"
+    result = rg.generate_response("test")
+    assert isinstance(result, str)
+    assert "Thank you" in result

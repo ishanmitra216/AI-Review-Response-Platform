@@ -17,6 +17,26 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+def _fallback_response(review: str, sentiment: str) -> str:
+    """Return a safe local response when LLM access is unavailable."""
+
+    if sentiment == "positive":
+        return (
+            "Thank you for your kind feedback. We are glad you had a great "
+            "experience and look forward to serving you again soon."
+        )
+    if sentiment == "negative":
+        return (
+            "Thank you for sharing your feedback. We are sorry your experience "
+            "did not meet expectations, and we would like to make it right. "
+            "Please contact us so we can follow up directly."
+        )
+    return (
+        "Thank you for your review. We appreciate your feedback and will use "
+        "it to keep improving our service."
+    )
+
+
 def generate_response(review: str) -> str:
     """Return a text response for *review* using the LLM.
 
@@ -24,10 +44,10 @@ def generate_response(review: str) -> str:
     string if the call fails, avoiding 500 errors bubbling up to the API.
     """
 
-    if not settings.OPENAI_API_KEY:
-        return "<api-key-not-configured>"
-
     sentiment = analyze_sentiment(review)
+
+    if not settings.OPENAI_API_KEY:
+        return _fallback_response(review, sentiment)
 
     prompt = (
         f"Customer Review: {review}\n"
@@ -40,17 +60,17 @@ def generate_response(review: str) -> str:
         # object behaves like ``openai.ChatCompletion`` so either path works.
         if hasattr(_client, "chat"):
             result = _client.chat.completions.create(
-                model="gpt-4",
+                model=settings.OPENAI_MODEL,
                 messages=[{"role": "user", "content": prompt}],
             )
             return result.choices[0].message.content
         else:
             # legacy path
             res = _client.ChatCompletion.create(
-                model="gpt-4",
+                model=settings.OPENAI_MODEL,
                 messages=[{"role": "user", "content": prompt}],
             )
             return res.choices[0].message.content
-    except Exception as exc:  # pylint: disable=broad-except
+    except Exception:  # pylint: disable=broad-except
         logger.exception("failed to generate response")
-        return "<error-generating-response>"
+        return _fallback_response(review, sentiment)
