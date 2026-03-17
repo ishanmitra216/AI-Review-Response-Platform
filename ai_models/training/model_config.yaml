@@ -1,0 +1,49 @@
+datasets:
+  review_dataset:
+    path: datasets/review_dataset.csv
+    description: E-commerce product reviews with ratings and summaries
+    columns: [ProductName, Price, Rate, Review, Summary]
+    use: topic_model_training
+
+  sentiment_dataset:
+    path: datasets/sentiment_dataset.csv
+    description: Food delivery order reviews with English sentiment labels derived from customer ratings
+    columns: [order_id, timestamp, menu_category, order_price, delivery_distance_km, wait_time_minutes, rating, review_text, promo_applied, complaint_level, order_status, sentiment]
+    use: sentiment_model_training
+
+  restaurant_reviews_dataset:
+    path: datasets/restaurant_reviews_dataset.csv
+    description: Restaurant, cafe, bar, and fast food reviews from Google and Yelp with topic labels
+    columns: [review_id, platform, business_category, business_name, rating, review_text, sentiment, topics]
+    use: topic_model_training, sentiment_model_training
+
+  hotel_reviews_dataset:
+    path: datasets/hotel_reviews_dataset.csv
+    description: Hotel and accommodation reviews from Google and TripAdvisor with topic labels
+    columns: [review_id, platform, hotel_name, hotel_category, rating, review_text, sentiment, topics]
+    use: topic_model_training, sentiment_model_training
+
+  review_response_pairs_dataset:
+    path: datasets/review_response_pairs_dataset.csv
+    description: Labeled review-response pairs covering multiple business types, tones, and sentiments
+    columns: [pair_id, business_type, platform, rating, sentiment, topics, review_text, response_text, tone]
+    use: response_generator_training
+
+  tone_examples_dataset:
+    path: datasets/tone_examples_dataset.csv
+    description: Tone-specific response templates for professional, friendly, formal, apologetic, and empathetic tones
+    columns: [tone, situation, rating_range, sentiment, template_text]
+    use: tone_customizer_training
+
+sentiment_model:
+  labels: [positive, neutral, negative]
+  min_confidence: 0.6
+
+topic_model:
+  topics: [food, service, ambiance, pricing, cleanliness, wait_time, amenities, room_quality, location, hygiene, delivery]
+  min_keyword_match: 1
+
+response_generator:
+  tones: [professional, friendly, formal, apologetic, empathetic]
+  default_tone: professional
+  max_response_length: 300
